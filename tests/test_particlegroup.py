@@ -12,6 +12,7 @@ from beamphysics.particles import load_bunch_data, single_particle
 from beamphysics.readers import (
     get_root_metadata,
     expected_record_unit_dimension,
+    is_openpmd,
     load_only_time_offset,
     load_time_offset,
     particle_array,
@@ -466,6 +467,14 @@ def test_load_only_time_offset_missing_file(tmp_path: pathlib.Path):
 def test_load_only_time_offset_unsupported_type(h5):
     with pytest.raises(TypeError):
         load_only_time_offset(h5)
+
+
+def test_is_openpmd_valid_file(species_h5file: pathlib.Path):
+    assert is_openpmd(species_h5file)
+
+
+def test_is_openpmd_invalid_file():
+    assert not is_openpmd(pathlib.Path("docs/examples/data/elegant_raw.h5"))
 
 
 def test_fractional_split():
