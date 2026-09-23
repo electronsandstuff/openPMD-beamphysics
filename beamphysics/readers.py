@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 
 import numpy as np
-from h5py import File, Group
+from h5py import File, Group, is_hdf5
 
 from .exceptions import (
     MultipleIterationsError,
@@ -84,6 +84,31 @@ def get_root_metadata(h5: File | Group, warn: bool = False) -> dict:
         metadata,
     )
     return attrs
+
+
+def is_openpmd(path: pathlib.Path) -> bool:
+    """
+    Whether a file is an openPMD file, by confirming it is an HDF5 file with
+    the attributes "openPMD".
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        Any file on disk.
+
+    Returns
+    -------
+    bool
+        Whether we think this file is OpenPMD or not.
+    """
+    if not is_hdf5(path):
+        return False
+    try:
+        with File(path, "r") as h5:
+            return "openPMD" in h5.attrs
+    except OSError as ex:
+        logger.warning(f"Could not read {path} as HDF5: {ex}")
+        return False
 
 
 # -----------------------------------------
