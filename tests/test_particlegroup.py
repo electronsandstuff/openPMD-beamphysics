@@ -477,6 +477,14 @@ def test_is_openpmd_invalid_file():
     assert not is_openpmd(pathlib.Path("docs/examples/data/elegant_raw.h5"))
 
 
+def test_is_openpmd_handles(species_h5file: pathlib.Path):
+    with h5py.File(species_h5file, "r") as fp:
+        assert is_openpmd(fp)
+        assert not is_openpmd(fp["particles"])
+    with h5py.File("docs/examples/data/elegant_raw.h5", "r") as fp:
+        assert not is_openpmd(fp)
+
+
 def test_fractional_split():
     head, tail = P.fractional_split(0.5, "t")
     head, core, tail = P.fractional_split((0.1, 0.9), "t")
